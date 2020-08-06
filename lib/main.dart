@@ -314,7 +314,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     child: PrimaryButton(
-                      btnText: "LOGIN",
+                      btnText: "SIGN IN",
 
                     ),
                   ),
