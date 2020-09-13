@@ -1,6 +1,6 @@
+import 'package:etics_app/start-page/start_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'start-page/start-page.dart';
 
 void main() {
   runApp(MyApp());
