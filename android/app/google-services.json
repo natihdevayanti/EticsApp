@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "56122911943",
+    "firebase_url": "https://eticsapp.firebaseio.com",
+    "project_id": "eticsapp",
+    "storage_bucket": "eticsapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56122911943:android:0d324349d8787f4ae462e2",
+        "android_client_info": {
+          "package_name": "com.example.etics_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "56122911943-tlp1e944desp29pgmobqv7o1i63pvcl5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMo5q035hAvabJ35mnECKTlIHEIEqDhhI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "56122911943-tlp1e944desp29pgmobqv7o1i63pvcl5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
