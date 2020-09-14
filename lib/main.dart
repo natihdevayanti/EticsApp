@@ -1,4 +1,4 @@
-import 'package:etics_app/start-page/start_page.dart';
+import 'package:etics_app/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: StartPage(),
+        body: Authentication(),
       )
     );
   }

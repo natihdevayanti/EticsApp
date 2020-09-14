@@ -21,8 +21,6 @@ class _LoginState extends State<Login> {
   double _width = 0;
   double _height = 0;
 
-  bool _rememberMe = false;
-
   @override
   void initState() {
     super.initState();
@@ -104,36 +102,8 @@ class _LoginState extends State<Login> {
                         hint: "Your password",
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
-                          Container(
-                            height: 20.0,
-                            child: Row(
-                              children: <Widget>[
-                                Theme(
-                                  data: ThemeData(
-                                      unselectedWidgetColor: Color(0xFF40F2E0)),
-                                  child: Checkbox(
-                                    value: _rememberMe,
-                                    checkColor: Color(0xFF40F2E0),
-                                    activeColor: Colors.white,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _rememberMe = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                Text(
-                                  'Remember me',
-                                  style: TextStyle(
-                                      color: Colors.black45,
-                                      fontSize: 13,
-                                      fontFamily: 'NunitoBold'),
-                                ),
-                              ],
-                            ),
-                          ),
                           Container(
                             alignment: Alignment.centerRight,
                             child: FlatButton(
@@ -155,14 +125,6 @@ class _LoginState extends State<Login> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return Dashboard();
-                              },
-                            ),
-                          );
                         },
                         child: PrimaryButton(
                           buttonText: "SIGN IN",

@@ -8,6 +8,18 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+        margin: EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(horizontal: 100),
+        child: Center(
+          child: Text(
+            "This is dashboard",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontFamily: 'NunitoLight'),
+          ),
+        ));
   }
 }
