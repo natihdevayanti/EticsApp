@@ -1,6 +1,5 @@
 import 'package:etics_app/authentication.dart';
 import 'package:etics_app/start-page/start_page.dart';
-import 'package:etics_app/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -11,107 +10,132 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var _backgroundColor = Colors.black12;
-  double _headingTop = 200;
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<StartPageModel>(
-        builder: (context, startPage, child) {
-          switch (startPage.state) {
-            case StartPageState.None:
-              _backgroundColor = Colors.black12;
-              _headingTop = 250;
-              break;
-
-            case StartPageState.Login:
-            case StartPageState.Register:
-              _backgroundColor = Colors.black54;
-              _headingTop = 50;
-              break;
-          }
-
-          return GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-                switch (startPage.state) {
-                  case StartPageState.None:
-                    startPage.state = StartPageState.Login;
-                    break;
-
-                  case StartPageState.Login:
-                    startPage.state = StartPageState.None;
-                    break;
-
-                  case StartPageState.Register:
-                    startPage.state = StartPageState.Login;
-                    break;
-                }
+    return Stack(
+      children: [
+        createTitle(),
+        Consumer<AuthenticationModel>(
+          builder: (context, authentication, child) {
+            return FutureBuilder<bool>(
+              future: authentication.loggedIn,
+              builder: (context, loggedIn) {
+                return AnimatedCrossFade(
+                  duration: Duration(milliseconds: 1000),
+                  crossFadeState: loggedIn.hasData
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  firstChild: createTapToContinue(),
+                  secondChild: createLoading(),
+                );
               },
-              child: AnimatedContainer(
-                color: _backgroundColor,
-                curve: Curves.fastLinearToSlowEaseIn,
-                duration: Duration(milliseconds: 1000),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    AnimatedContainer(
-                      curve: Curves.fastLinearToSlowEaseIn,
-                      duration: Duration(milliseconds: 1000),
-                      margin: EdgeInsets.only(top: _headingTop),
-                      child: Text(
-                        "ETICS",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 60,
-                            fontFamily: 'NunitoExtraBold'),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: 150, right: 150),
-                      height: 10,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget createTitle() {
+    return Consumer<StartPageModel>(
+      builder: (context, startPage, child) {
+        var windowHeight = MediaQuery.of(context).size.height;
+        return AnimatedContainer(
+          curve: Curves.fastLinearToSlowEaseIn,
+          duration: Duration(milliseconds: 1000),
+          width: double.maxFinite,
+          height: (startPage.state == StartPageState.None)
+              ? windowHeight
+              : windowHeight - 450,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 20),
+                child: Text(
+                  "ETICS",
+                  style: TextStyle(
                       color: Colors.white,
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(20),
-                      padding: EdgeInsets.symmetric(horizontal: 100),
-                      child: Text(
-                        "Keeping you and your beloved ones safe.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontFamily: 'NunitoLight'),
-                      ),
-                    ),
-                    createTapToContinue(),
-                  ],
+                      fontSize: 60,
+                      fontFamily: 'NunitoExtraBold'),
                 ),
-              ));
-        });
+              ),
+              Container(
+                width: 150,
+                height: 10,
+                color: Colors.white,
+              ),
+              Container(
+                margin: EdgeInsets.all(20),
+                child: Text(
+                  "Keeping you and your\nbeloved ones safe.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontFamily: 'NunitoLight'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget createLoading() {
+    return Container(
+      color: Colors.transparent,
+      width: double.maxFinite,
+      height: double.maxFinite,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+          Container(height: 100),
+        ],
+      ),
+    );
   }
 
   Widget createTapToContinue() {
-    return Container(
-      margin: EdgeInsets.only(top: 100),
-      child: Consumer2<AuthenticationModel, StartPageModel>(
-        builder: (context, authentication, startPage, child) {
-          return FutureBuilder<bool>(
-            future: authentication.loggedIn,
-            builder: (context, loggedIn) {
-              if (startPage.state != StartPageState.None) {
-                return Container();
-              }
-
-              return Text(
-                (loggedIn.hasData) ? "Tap to continue" : "Loading...",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontFamily: 'NunitoLight'),
-              );
-            },
+    return GestureDetector(
+      onTap: () {
+        var startPage = Provider.of<StartPageModel>(context, listen: false);
+        startPage.state = StartPageState.Login;
+      },
+      child: Consumer<StartPageModel>(
+        builder: (context, startPage, child) {
+          return AnimatedCrossFade(
+            duration: Duration(milliseconds: 1000),
+            crossFadeState: (startPage.state == StartPageState.None)
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            firstChild: Container(
+              color: Colors.transparent,
+              width: double.maxFinite,
+              height: double.maxFinite,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    "Tap to continue",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontFamily: 'NunitoLight'),
+                  ),
+                  Container(height: 100),
+                ],
+              ),
+            ),
+            secondChild: Container(
+              width: double.maxFinite,
+              height: double.maxFinite,
+            ),
           );
         },
       ),

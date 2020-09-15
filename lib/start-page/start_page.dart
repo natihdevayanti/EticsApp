@@ -34,52 +34,55 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider (
-        create: (context) => StartPageModel(),
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/Background.png"),
-              fit: BoxFit.cover,
-            ),
+      create: (context) => StartPageModel(),
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/Background.png"),
+            fit: BoxFit.cover,
           ),
-          child: Consumer<StartPageModel>(
-            builder: (context, startPage, child) {
-              return WillPopScope(
-                onWillPop: () async {
-                  switch (startPage.state) {
-                    case StartPageState.None:
+        ),
+        child: Consumer2<AuthenticationModel, StartPageModel>(
+          builder: (context, authentication, startPage, child) {
+            return FutureBuilder<bool>(
+              future: authentication.loggedIn,
+              builder: (context, loggedIn) {
+                List<Widget> widgets = [ Home() ];
+                if (loggedIn.hasData) {
+                  widgets.addAll([
+                    Login(),
+                    Register(),
+                  ]);
+                }
+
+                return WillPopScope(
+                  onWillPop: () async {
+                    if (!loggedIn.hasData) {
                       return true;
+                    }
 
-                    case StartPageState.Login:
-                      startPage.state = StartPageState.None;
-                      break;
+                    switch (startPage.state) {
+                      case StartPageState.None:
+                        return true;
 
-                    case StartPageState.Register:
-                      startPage.state = StartPageState.Login;
-                      break;
-                  }
+                      case StartPageState.Login:
+                        startPage.state = StartPageState.None;
+                        break;
 
-                  return false;
-                },
-                child: Consumer<AuthenticationModel>(
-                  builder: (context, authentication, child) {
-                    return FutureBuilder<bool>(
-                        future: authentication.loggedIn,
-                        builder: (context, loggedIn) {
-                          List<Widget> widgets = [ Home() ];
-                          if (loggedIn.hasData) {
-                            widgets.addAll([
-                              Login(),
-                              Register(),
-                            ]);
-                          }
+                      case StartPageState.Register:
+                        startPage.state = StartPageState.Login;
+                        break;
+                    }
 
-                          return Stack(children: widgets);
-                        });
+                    return false;
                   },
-                ));
-            },
-          ),
-        ));
+                  child: Stack(children: widgets)
+                );
+              }
+            );
+          },
+        ),
+      )
+    );
   }
 }
