@@ -94,21 +94,30 @@ class _LoginState extends State<Login> {
   }
 
   Widget createBackLayer() {
-    return Consumer<ScreenHeight>(
-      builder: (context, screenHeight, child) {
-        return GestureDetector(
-          onTap: () {
-            if (screenHeight.isOpen) {
-              FocusScope.of(context).unfocus();
-            } else {
-              var startPage = Provider.of<StartPageModel>(context, listen: false);
+    return Consumer2<StartPageModel, ScreenHeight>(
+      builder: (context, startPage, screenHeight, child) {
+        return WillPopScope(
+          onWillPop: () async {
+            if (startPage.state == StartPageState.Login) {
               startPage.state = StartPageState.None;
+              return false;
             }
+
+            return true;
           },
-          child: Container(
-            color: Colors.transparent,
-            width: double.maxFinite,
-            height: double.maxFinite,
+          child: GestureDetector(
+            onTap: () {
+              if (screenHeight.isOpen) {
+                FocusScope.of(context).unfocus();
+              } else {
+                startPage.state = StartPageState.None;
+              }
+            },
+            child: Container(
+              color: Colors.transparent,
+              width: double.maxFinite,
+              height: double.maxFinite,
+            ),
           ),
         );
       }

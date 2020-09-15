@@ -55,29 +55,7 @@ class _StartPageState extends State<StartPage> {
                   ]);
                 }
 
-                return WillPopScope(
-                  onWillPop: () async {
-                    if (!loggedIn.hasData) {
-                      return true;
-                    }
-
-                    switch (startPage.state) {
-                      case StartPageState.None:
-                        return true;
-
-                      case StartPageState.Login:
-                        startPage.state = StartPageState.None;
-                        break;
-
-                      case StartPageState.Register:
-                        startPage.state = StartPageState.Login;
-                        break;
-                    }
-
-                    return false;
-                  },
-                  child: Stack(children: widgets)
-                );
+                return Stack(children: widgets);
               }
             );
           },
