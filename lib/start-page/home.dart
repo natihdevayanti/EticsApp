@@ -20,13 +20,11 @@ class _HomeState extends State<Home> {
             return FutureBuilder<bool>(
               future: authentication.loggedIn,
               builder: (context, loggedIn) {
-                return AnimatedCrossFade(
+                return AnimatedSwitcher(
                   duration: Duration(milliseconds: 1000),
-                  crossFadeState: loggedIn.hasData
-                      ? CrossFadeState.showFirst
-                      : CrossFadeState.showSecond,
-                  firstChild: createTapToContinue(),
-                  secondChild: createLoading(),
+                  child: loggedIn.hasData
+                    ? createTapToContinue()
+                    : createLoading(),
                 );
               },
             );
@@ -85,6 +83,7 @@ class _HomeState extends State<Home> {
 
   Widget createLoading() {
     return Container(
+      key: ValueKey("loading"),
       color: Colors.transparent,
       width: double.maxFinite,
       height: double.maxFinite,
@@ -102,40 +101,41 @@ class _HomeState extends State<Home> {
 
   Widget createTapToContinue() {
     return GestureDetector(
+      key: ValueKey("tap to continue"),
       onTap: () {
         var startPage = Provider.of<StartPageModel>(context, listen: false);
         startPage.state = StartPageState.Login;
       },
       child: Consumer<StartPageModel>(
         builder: (context, startPage, child) {
-          return AnimatedCrossFade(
+          return AnimatedSwitcher(
             duration: Duration(milliseconds: 1000),
-            crossFadeState: (startPage.state == StartPageState.None)
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-            firstChild: Container(
-              color: Colors.transparent,
-              width: double.maxFinite,
-              height: double.maxFinite,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    "Tap to continue",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontFamily: 'NunitoLight'),
+            child: (startPage.state == StartPageState.None)
+              ? Container(
+                  key: ValueKey("tap to continue"),
+                  color: Colors.transparent,
+                  width: double.maxFinite,
+                  height: double.maxFinite,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Tap to continue",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontFamily: 'NunitoLight'),
+                      ),
+                      Container(height: 100),
+                    ],
                   ),
-                  Container(height: 100),
-                ],
-              ),
-            ),
-            secondChild: Container(
-              width: double.maxFinite,
-              height: double.maxFinite,
-            ),
+                )
+              : Container(
+                  key: ValueKey("null container"),
+                  width: double.maxFinite,
+                  height: double.maxFinite,
+                ),
           );
         },
       ),

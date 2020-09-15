@@ -14,6 +14,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
   double _opacity = 1;
   double _xOffset = 0;
   double _yOffset = 0;
@@ -140,6 +144,7 @@ class _LoginState extends State<Login> {
         InputWithIcon(
           icon: Icons.email,
           hint: "Your email",
+          controller: emailController,
         ),
         SizedBox(
           height: 15,
@@ -147,6 +152,7 @@ class _LoginState extends State<Login> {
         InputWithIconPass(
           icon: Icons.lock,
           hint: "Your password",
+          controller: passwordController,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,

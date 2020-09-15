@@ -44,13 +44,11 @@ class _AuthenticationState extends State<Authentication> {
             return FutureBuilder<bool>(
                 future: authentication.loggedIn,
                 builder: (context, loggedIn) {
-                  return AnimatedCrossFade(
+                  return AnimatedSwitcher(
                       duration: Duration(seconds: 2),
-                      crossFadeState: (loggedIn.hasData && loggedIn.data)
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond,
-                      firstChild: Dashboard(),
-                      secondChild: StartPage());
+                      child: (loggedIn.hasData && loggedIn.data)
+                        ? Dashboard()
+                        : StartPage());
                 });
           }
         ));
