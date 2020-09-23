@@ -1,8 +1,8 @@
+import 'package:etics_app/authentication.dart';
 import 'package:etics_app/start-page/start_page.dart';
 import 'package:etics_app/widgets/input_with_icon_pass.dart';
 import 'package:etics_app/widgets/input_with_icon.dart';
-import 'package:etics_app/widgets/primary_button.dart';
-import 'package:etics_app/widgets/secondary_button.dart';
+import 'package:etics_app/widgets/wide_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
 import 'package:flutter_keyboard_size/screen_height.dart';
@@ -17,6 +17,8 @@ class _LoginState extends State<Login> {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  bool loggingIn = false;
 
   double _opacity = 1;
   double _xOffset = 0;
@@ -85,7 +87,7 @@ class _LoginState extends State<Login> {
                   createInputAndTitle(),
                   createButtons(),
                 ],
-              )
+              ),
             ),
           ];
 
@@ -103,7 +105,10 @@ class _LoginState extends State<Login> {
         return WillPopScope(
           onWillPop: () async {
             if (startPage.state == StartPageState.Login) {
-              startPage.state = StartPageState.None;
+              if (!loggingIn) {
+                startPage.state = StartPageState.None;
+              }
+
               return false;
             }
 
@@ -113,7 +118,7 @@ class _LoginState extends State<Login> {
             onTap: () {
               if (screenHeight.isOpen) {
                 FocusScope.of(context).unfocus();
-              } else {
+              } else if (!loggingIn) {
                 startPage.state = StartPageState.None;
               }
             },
@@ -179,24 +184,29 @@ class _LoginState extends State<Login> {
   Widget createButtons() {
     return Column(
       children: <Widget>[
-        GestureDetector(
+        WideButton(
+          buttonText: "SIGN IN",
           onTap: () {
+            setState(() => loggingIn = true);
+            var authentication = Provider.of<AuthenticationModel>(context, listen: false);
+            authentication.logIn()
+              .then((_) => setState(() => loggingIn = false))
+              .catchError((_) => setState(() => loggingIn = false));
           },
-          child: PrimaryButton(
-            buttonText: "SIGN IN",
-          ),
+          disable: loggingIn,
+          progress: loggingIn,
         ),
         SizedBox(
           height: 10,
         ),
-        GestureDetector(
+        WideButton(
           onTap: () {
             var startPage = Provider.of<StartPageModel>(context, listen: false);
             startPage.state = StartPageState.Register;
           },
-          child: SecondaryButton(
-            buttonText: "CREATE NEW ACCOUNT",
-          ),
+          buttonText: "CREATE NEW ACCOUNT",
+          outline: true,
+          disable: loggingIn,
         ),
       ],
     );

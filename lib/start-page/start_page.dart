@@ -1,6 +1,5 @@
 
 import 'package:etics_app/authentication.dart';
-import 'package:etics_app/start-page/home.dart';
 import 'package:etics_app/start-page/login.dart';
 import 'package:etics_app/start-page/register.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider (
+    return ChangeNotifierProvider<StartPageModel>(
       create: (context) => StartPageModel(),
       child: Container(
         decoration: BoxDecoration(
@@ -42,13 +41,22 @@ class _StartPageState extends State<StartPage> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Consumer2<AuthenticationModel, StartPageModel>(
-          builder: (context, authentication, startPage, child) {
+        child: Consumer<AuthenticationModel>(
+          builder: (context, authentication, child) {
             return FutureBuilder<bool>(
-              future: authentication.loggedIn,
-              builder: (context, loggedIn) {
-                List<Widget> widgets = [ Home() ];
-                if (loggedIn.hasData) {
+              future: authentication.initialize(),
+              builder: (context, initializing) {
+                List<Widget> widgets = [
+                  createTitle(),
+                  AnimatedSwitcher(
+                    duration: Duration(milliseconds: 1000),
+                    child: initializing.hasData && initializing.data
+                      ? createTapToContinue()
+                      : createLoading(),
+                  ),
+                ];
+
+                if (initializing.hasData && initializing.data) {
                   widgets.addAll([
                     Login(),
                     Register(),
@@ -61,6 +69,114 @@ class _StartPageState extends State<StartPage> {
           },
         ),
       )
+    );
+  }
+
+  Widget createTitle() {
+    return Consumer<StartPageModel>(
+      builder: (context, startPage, child) {
+        var windowHeight = MediaQuery.of(context).size.height;
+        return AnimatedContainer(
+          curve: Curves.fastLinearToSlowEaseIn,
+          duration: Duration(milliseconds: 1000),
+          width: double.maxFinite,
+          height: (startPage.state == StartPageState.None)
+              ? windowHeight
+              : windowHeight - 450,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(top: 20),
+                child: Text(
+                  "ETICS",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 60,
+                      fontFamily: 'NunitoExtraBold'),
+                ),
+              ),
+              Container(
+                width: 150,
+                height: 10,
+                color: Colors.white,
+              ),
+              Container(
+                margin: EdgeInsets.all(20),
+                child: Text(
+                  "Keeping you and your\nbeloved ones safe.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontFamily: 'NunitoLight'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget createLoading() {
+    return Container(
+      key: ValueKey("loading"),
+      color: Colors.transparent,
+      width: double.maxFinite,
+      height: double.maxFinite,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+          Container(height: 100),
+        ],
+      ),
+    );
+  }
+
+  Widget createTapToContinue() {
+    return Consumer<StartPageModel>(
+      key: ValueKey("tapToContinue"),
+      builder: (context, startPage, child) {
+        return GestureDetector(
+          onTap: () {
+            var startPage = Provider.of<StartPageModel>(context, listen: false);
+            startPage.state = StartPageState.Login;
+          },
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 1000),
+            child: (startPage.state == StartPageState.None)
+              ? Container(
+                  key: ValueKey("tap to continue"),
+                  color: Colors.transparent,
+                  width: double.maxFinite,
+                  height: double.maxFinite,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Tap to continue",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontFamily: 'NunitoLight'),
+                      ),
+                      Container(height: 100),
+                    ],
+                  ),
+                )
+              : Container(
+                  key: ValueKey("null container"),
+                  width: double.maxFinite,
+                  height: double.maxFinite,
+                ),
+          )
+        );
+      },
     );
   }
 }

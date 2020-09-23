@@ -1,8 +1,7 @@
 import 'package:etics_app/start-page/start_page.dart';
 import 'package:etics_app/widgets/input_with_icon.dart';
 import 'package:etics_app/widgets/input_with_icon_pass.dart';
-import 'package:etics_app/widgets/primary_button.dart';
-import 'package:etics_app/widgets/secondary_button.dart';
+import 'package:etics_app/widgets/wide_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_keyboard_size/screen_height.dart';
@@ -136,7 +135,7 @@ class _RegisterState extends State<Register> {
   Widget createButtons() {
     return Column(
       children: <Widget>[
-        GestureDetector(
+        WideButton(
           onTap: () {
             Navigator.push(
               context,
@@ -147,21 +146,18 @@ class _RegisterState extends State<Register> {
               ),
             );
           },
-          child: PrimaryButton(
-            buttonText: "SIGN UP",
-          ),
+          buttonText: "SIGN UP",
         ),
         SizedBox(
           height: 10,
         ),
-        GestureDetector(
+        WideButton(
           onTap: () {
             var startPage = Provider.of<StartPageModel>(context, listen: false);
             startPage.state = StartPageState.Login;
           },
-          child: SecondaryButton(
-            buttonText: "BACK TO LOGIN",
-          ),
+          buttonText: "BACK TO LOGIN",
+          outline: true,
         )
       ],
     );

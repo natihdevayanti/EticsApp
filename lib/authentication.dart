@@ -7,25 +7,27 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class AuthenticationModel extends ChangeNotifier {
-  Future<bool> _loggedIn;
-  Future<bool> get loggedIn => _loggedIn;
+  User _user;
+  User get user => _user;
 
-  AuthenticationModel() {
-    _loggedIn = Future<bool>(() async {
-      await Future.delayed(Duration(seconds: 3));
-      await Firebase.initializeApp();
+  Future<bool> initialize() async {
+    await Future.delayed(Duration(seconds: 3));
+    await Firebase.initializeApp();
 
-      FirebaseAuth.instance
-        .authStateChanges()
-        .listen((user) {
-          _loggedIn = Future<bool>(() async {
-            return (user != null && user.emailVerified);
-          });
-        });
+    _user = FirebaseAuth.instance.currentUser;
 
-      var user = FirebaseAuth.instance.currentUser;
-      return (user != null && user.emailVerified);
-    });
+    FirebaseAuth.instance
+      .authStateChanges()
+      .listen((user) {
+        _user = user;
+      });
+
+    return true;
+  }
+
+  Future<bool> logIn() async {
+    await Future.delayed(Duration(seconds: 3));
+    return false;
   }
 }
 
@@ -41,15 +43,11 @@ class _AuthenticationState extends State<Authentication> {
         create: (context) => AuthenticationModel(),
         child: Consumer<AuthenticationModel>(
           builder: (context, authentication, child) {
-            return FutureBuilder<bool>(
-                future: authentication.loggedIn,
-                builder: (context, loggedIn) {
-                  return AnimatedSwitcher(
-                      duration: Duration(seconds: 2),
-                      child: (loggedIn.hasData && loggedIn.data)
-                        ? Dashboard()
-                        : StartPage());
-                });
+            return AnimatedSwitcher(
+                duration: Duration(seconds: 2),
+                child: (authentication.user != null)
+                  ? Dashboard()
+                  : StartPage());
           }
         ));
   }
