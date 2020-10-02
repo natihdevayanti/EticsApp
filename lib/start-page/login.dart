@@ -1,7 +1,6 @@
 import 'package:etics_app/authentication.dart';
 import 'package:etics_app/start-page/start_page.dart';
-import 'package:etics_app/widgets/input_with_icon_pass.dart';
-import 'package:etics_app/widgets/input_with_icon.dart';
+import 'package:etics_app/widgets/wide_text_field.dart';
 import 'package:etics_app/widgets/wide_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
@@ -146,18 +145,21 @@ class _LoginState extends State<Login> {
                 fontFamily: 'NunitoBold'),
           ),
         ),
-        InputWithIcon(
+        WideTextField(
           icon: Icons.email,
           hint: "Your email",
           controller: emailController,
+          disable: loggingIn,
         ),
         SizedBox(
           height: 15,
         ),
-        InputWithIconPass(
+        WideTextField(
           icon: Icons.lock,
           hint: "Your password",
           controller: passwordController,
+          obscureText: true,
+          disable: loggingIn,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,

@@ -1,6 +1,5 @@
 import 'package:etics_app/start-page/start_page.dart';
-import 'package:etics_app/widgets/input_with_icon.dart';
-import 'package:etics_app/widgets/input_with_icon_pass.dart';
+import 'package:etics_app/widgets/wide_text_field.dart';
 import 'package:etics_app/widgets/wide_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -114,16 +113,17 @@ class _RegisterState extends State<Register> {
                 fontFamily: 'NunitoBold'),
           ),
         ),
-        InputWithIcon(
+        WideTextField(
           icon: Icons.email,
           hint: "Your email",
         ),
         SizedBox(
           height: 15,
         ),
-        InputWithIconPass(
+        WideTextField(
           icon: Icons.lock,
           hint: "Password",
+          obscureText: true,
         ),
         SizedBox(
           height: 20,
