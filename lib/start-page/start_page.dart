@@ -47,9 +47,11 @@ class _StartPageState extends State<StartPage> {
               createTitle(),
               AnimatedSwitcher(
                 duration: Duration(milliseconds: 1000),
-                child: authentication.initialized && authentication.user == null
-                  ? createTapToContinue()
-                  : createLoading(),
+                child: authentication.user != null
+                  ? Container()
+                  : authentication.initialized
+                    ? createTapToContinue()
+                    : createLoading(),
               ),
             ];
 

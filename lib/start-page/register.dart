@@ -1,12 +1,11 @@
 import 'package:etics_app/start-page/start_page.dart';
 import 'package:etics_app/widgets/wide_text_field.dart';
 import 'package:etics_app/widgets/wide_button.dart';
+import 'package:etics_app/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_keyboard_size/screen_height.dart';
 import 'package:provider/provider.dart';
-
-import '../dashboard.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -14,6 +13,12 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _signingUp = false;
+
   double _yOffset = 0;
   double _height = 0;
 
@@ -116,6 +121,8 @@ class _RegisterState extends State<Register> {
         WideTextField(
           icon: Icons.email,
           hint: "Your email",
+          controller: _emailController,
+          disable: _signingUp,
         ),
         SizedBox(
           height: 15,
@@ -124,6 +131,8 @@ class _RegisterState extends State<Register> {
           icon: Icons.lock,
           hint: "Password",
           obscureText: true,
+          controller: _passwordController,
+          disable: _signingUp,
         ),
         SizedBox(
           height: 20,
@@ -136,28 +145,32 @@ class _RegisterState extends State<Register> {
     return Column(
       children: <Widget>[
         WideButton(
+          text: "Sign Up",
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return Dashboard();
-                },
-              ),
-            );
+            setState(() => _signingUp = true);
+            var authentication = Provider.of<AuthenticationModel>(context, listen: false);
+            authentication.signUp(email: _emailController.text.trim(),
+                password: _passwordController.text.trim())
+              .then((_) => setState(() => _signingUp = false))
+              .catchError((err) {
+                setState(() => _signingUp = false);
+                print("Sign in error " + err.toString());
+              });
           },
-          text: "SIGN UP",
+          disable: _signingUp,
+          progress: _signingUp,
         ),
         SizedBox(
           height: 10,
         ),
         WideButton(
+          text: "Back To Login",
           onTap: () {
             var startPage = Provider.of<StartPageModel>(context, listen: false);
             startPage.state = StartPageState.Login;
           },
-          text: "BACK TO LOGIN",
           outline: true,
+          disable: _signingUp,
         )
       ],
     );

@@ -164,8 +164,8 @@ class _LoginState extends State<Login> {
         WideTextField(
           icon: Icons.lock,
           hint: "Your password",
-          controller: _passwordController,
           obscureText: true,
+          controller: _passwordController,
           disable: _signingIn,
         ),
         Row(

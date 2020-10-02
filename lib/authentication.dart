@@ -35,15 +35,24 @@ class AuthenticationModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signIn({String email, String password}) async {
+  Future signUp({String email, String password}) async {
+    var userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: email, password: password);
+    _user = userCredential.user;
+    notifyListeners();
+  }
+
+  Future signIn({String email, String password}) async {
     var userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email, password: password);
     _user = userCredential.user;
     notifyListeners();
   }
 
-  Future<void> signOut() async {
+  Future signOut() async {
     await FirebaseAuth.instance.signOut();
+    _user = null;
+    notifyListeners();
   }
 }
 
