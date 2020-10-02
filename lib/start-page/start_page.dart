@@ -43,29 +43,24 @@ class _StartPageState extends State<StartPage> {
         ),
         child: Consumer<AuthenticationModel>(
           builder: (context, authentication, child) {
-            return FutureBuilder<bool>(
-              future: authentication.initialize(),
-              builder: (context, initializing) {
-                List<Widget> widgets = [
-                  createTitle(),
-                  AnimatedSwitcher(
-                    duration: Duration(milliseconds: 1000),
-                    child: initializing.hasData && initializing.data
-                      ? createTapToContinue()
-                      : createLoading(),
-                  ),
-                ];
+            List<Widget> widgets = [
+              createTitle(),
+              AnimatedSwitcher(
+                duration: Duration(milliseconds: 1000),
+                child: authentication.initialized && authentication.user == null
+                  ? createTapToContinue()
+                  : createLoading(),
+              ),
+            ];
 
-                if (initializing.hasData && initializing.data) {
-                  widgets.addAll([
-                    Login(),
-                    Register(),
-                  ]);
-                }
+            if (authentication.initialized && authentication.user == null) {
+              widgets.addAll([
+                Login(),
+                Register(),
+              ]);
+            }
 
-                return Stack(children: widgets);
-              }
-            );
+            return Stack(children: widgets);
           },
         ),
       )

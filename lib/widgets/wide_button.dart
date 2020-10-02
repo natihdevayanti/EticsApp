@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class WideButton extends StatefulWidget {
   final Function() onTap;
-  final String buttonText;
+  final String text;
   final bool disable;
   final bool progress;
   final bool outline;
 
   WideButton({
-    this.buttonText,
+    this.text,
     this.onTap,
     this.disable = false,
     this.progress = false,
@@ -76,7 +76,7 @@ class _WideButtonState extends State<WideButton> {
                         valueColor: AlwaysStoppedAnimation<Color>(contentColor),
                       ),
                     )
-                  : Text(widget.buttonText,
+                  : Text(widget.text.toUpperCase(),
                       style: TextStyle(
                         color: contentColor,
                         fontSize: 16,

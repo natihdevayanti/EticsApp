@@ -14,16 +14,23 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  bool loggingIn = false;
+  bool _signingIn = false;
 
   double _opacity = 1;
   double _xOffset = 0;
   double _yOffset = 0;
   double _width = 0;
   double _height = 0;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +111,7 @@ class _LoginState extends State<Login> {
         return WillPopScope(
           onWillPop: () async {
             if (startPage.state == StartPageState.Login) {
-              if (!loggingIn) {
+              if (!_signingIn) {
                 startPage.state = StartPageState.None;
               }
 
@@ -117,7 +124,7 @@ class _LoginState extends State<Login> {
             onTap: () {
               if (screenHeight.isOpen) {
                 FocusScope.of(context).unfocus();
-              } else if (!loggingIn) {
+              } else if (!_signingIn) {
                 startPage.state = StartPageState.None;
               }
             },
@@ -148,8 +155,8 @@ class _LoginState extends State<Login> {
         WideTextField(
           icon: Icons.email,
           hint: "Your email",
-          controller: emailController,
-          disable: loggingIn,
+          controller: _emailController,
+          disable: _signingIn,
         ),
         SizedBox(
           height: 15,
@@ -157,9 +164,9 @@ class _LoginState extends State<Login> {
         WideTextField(
           icon: Icons.lock,
           hint: "Your password",
-          controller: passwordController,
+          controller: _passwordController,
           obscureText: true,
-          disable: loggingIn,
+          disable: _signingIn,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -187,16 +194,20 @@ class _LoginState extends State<Login> {
     return Column(
       children: <Widget>[
         WideButton(
-          buttonText: "SIGN IN",
+          text: "Sign In",
           onTap: () {
-            setState(() => loggingIn = true);
+            setState(() => _signingIn = true);
             var authentication = Provider.of<AuthenticationModel>(context, listen: false);
-            authentication.logIn()
-              .then((_) => setState(() => loggingIn = false))
-              .catchError((_) => setState(() => loggingIn = false));
+            authentication.signIn(email: _emailController.text.trim(),
+                password: _passwordController.text.trim())
+              .then((_) => setState(() => _signingIn = false))
+              .catchError((err) {
+                setState(() => _signingIn = false);
+                print("Sign in error " + err.toString());
+              });
           },
-          disable: loggingIn,
-          progress: loggingIn,
+          disable: _signingIn,
+          progress: _signingIn,
         ),
         SizedBox(
           height: 10,
@@ -206,9 +217,9 @@ class _LoginState extends State<Login> {
             var startPage = Provider.of<StartPageModel>(context, listen: false);
             startPage.state = StartPageState.Register;
           },
-          buttonText: "CREATE NEW ACCOUNT",
+          text: "Create New Account",
           outline: true,
-          disable: loggingIn,
+          disable: _signingIn,
         ),
       ],
     );

@@ -7,27 +7,43 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class AuthenticationModel extends ChangeNotifier {
+  bool _initialized = false;
+  bool get initialized => _initialized;
+
   User _user;
   User get user => _user;
 
-  Future<bool> initialize() async {
+  AuthenticationModel() {
+    initialize();
+  }
+
+  Future<void> initialize() async {
     await Future.delayed(Duration(seconds: 3));
     await Firebase.initializeApp();
 
     _user = FirebaseAuth.instance.currentUser;
+    notifyListeners();
 
     FirebaseAuth.instance
       .authStateChanges()
       .listen((user) {
         _user = user;
+        notifyListeners();
       });
 
-    return true;
+    _initialized = true;
+    notifyListeners();
   }
 
-  Future<bool> logIn() async {
-    await Future.delayed(Duration(seconds: 3));
-    return false;
+  Future<void> signIn({String email, String password}) async {
+    var userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email, password: password);
+    _user = userCredential.user;
+    notifyListeners();
+  }
+
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
   }
 }
 
@@ -44,7 +60,7 @@ class _AuthenticationState extends State<Authentication> {
         child: Consumer<AuthenticationModel>(
           builder: (context, authentication, child) {
             return AnimatedSwitcher(
-                duration: Duration(seconds: 2),
+                duration: Duration(milliseconds: 1000),
                 child: (authentication.user != null)
                   ? Dashboard()
                   : StartPage());

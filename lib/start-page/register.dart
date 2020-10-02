@@ -146,7 +146,7 @@ class _RegisterState extends State<Register> {
               ),
             );
           },
-          buttonText: "SIGN UP",
+          text: "SIGN UP",
         ),
         SizedBox(
           height: 10,
@@ -156,7 +156,7 @@ class _RegisterState extends State<Register> {
             var startPage = Provider.of<StartPageModel>(context, listen: false);
             startPage.state = StartPageState.Login;
           },
-          buttonText: "BACK TO LOGIN",
+          text: "BACK TO LOGIN",
           outline: true,
         )
       ],
