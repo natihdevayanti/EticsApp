@@ -89,7 +89,7 @@ class _EquipmentState extends State<Equipment> {
                             _sensorWidget("assets/images/lightbulb.png",
                                 "Light", "Connected"),
                             _sensorWidget("assets/images/air-conditioner.png",
-                                "AC", "Connected"),
+                                "AC", "24* Celcius"),
                             _sensorWidget("assets/images/camera.png",
                                 "Watch Class", "See Details"),
                             _sensorWidget(
