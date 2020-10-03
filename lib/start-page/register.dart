@@ -1,14 +1,11 @@
 import 'package:etics_app/start-page/start_page.dart';
-import 'package:etics_app/widgets/input_with_icon.dart';
-import 'package:etics_app/widgets/input_with_icon_pass.dart';
-import 'package:etics_app/widgets/primary_button.dart';
-import 'package:etics_app/widgets/secondary_button.dart';
+import 'package:etics_app/widgets/wide_text_field.dart';
+import 'package:etics_app/widgets/wide_button.dart';
+import 'package:etics_app/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:flutter_keyboard_size/screen_height.dart';
 import 'package:provider/provider.dart';
-
-import '../dashboard.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -16,40 +13,40 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  bool _keyboardVisible = false;
+
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool _signingUp = false;
+
   double _yOffset = 0;
   double _height = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    KeyboardVisibilityNotification().addNewListener(
-        onChange: (bool visible) {
-          _keyboardVisible = visible;
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
     double windowHeight = MediaQuery.of(context).size.height;
 
-    return Consumer<StartPageModel>(
-        builder: (context, startPage, child) {
+    return Consumer2<StartPageModel, ScreenHeight>(
+        builder: (context, startPage, screenHeight, child) {
           switch (startPage.state) {
             case StartPageState.None:
             case StartPageState.Login:
               _yOffset = windowHeight;
-              _height = windowHeight - 270;
+              _height = 440;
               break;
 
             case StartPageState.Register:
-              _yOffset = _keyboardVisible ? 170 : 270;
-              _height = _keyboardVisible ? windowHeight : windowHeight - 260;
+              _yOffset = screenHeight.isOpen
+                ? windowHeight - 240 - screenHeight.keyboardHeight
+                : windowHeight - 440;
+              _height = screenHeight.isOpen
+                ? screenHeight.keyboardHeight + 240
+                : 440;
               break;
           }
 
-          return AnimatedContainer(
+          List<Widget> widgets = [
+            AnimatedContainer(
               height: _height,
               padding: EdgeInsets.all(32),
               curve: Curves.fastLinearToSlowEaseIn,
@@ -62,66 +59,120 @@ class _RegisterState extends State<Register> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(bottom: 20),
-                        child: Text(
-                          "Create Account",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF050A30),
-                              fontFamily: 'NunitoBold'),
-                        ),
-                      ),
-                      InputWithIcon(
-                        icon: Icons.email,
-                        hint: "Your email",
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      InputWithIconPass(
-                        icon: Icons.lock,
-                        hint: "Password",
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return Dashboard();
-                              },
-                            ),
-                          );
-                        },
-                        child: PrimaryButton(
-                          buttonText: "SIGN UP",
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          startPage.state = StartPageState.Login;
-                        },
-                        child: SecondaryButton(
-                          buttonText: "BACK TO LOGIN",
-                        ),
-                      )
-                    ],
-                  ),
+                  createInputAndTitle(),
+                  createButtons(),
                 ],
-              ));
+              )
+            ),
+          ];
+
+          if (startPage.state == StartPageState.Register) {
+            widgets.insert(0, createBackLayer());
+          }
+
+          return Stack(children: widgets);
         });
+  }
+
+  Widget createBackLayer() {
+    return Consumer2<StartPageModel, ScreenHeight>(
+      builder: (context, startPage, screenHeight, child) {
+        return WillPopScope(
+          onWillPop: () async {
+            if (startPage.state == StartPageState.Register) {
+              startPage.state = StartPageState.Login;
+              return false;
+            }
+
+            return true;
+          },
+          child: GestureDetector(
+            onTap: () {
+              if (screenHeight.isOpen) {
+                FocusScope.of(context).unfocus();
+              } else {
+                startPage.state = StartPageState.Login;
+              }
+            },
+            child: Container(
+              color: Colors.transparent,
+              width: double.maxFinite,
+              height: double.maxFinite,
+            ),
+          ),
+        );
+      }
+    );
+  }
+
+  Widget createInputAndTitle() {
+    return Column(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(bottom: 20),
+          child: Text(
+            "Create Account",
+            style: TextStyle(
+                fontSize: 20,
+                color: Color(0xFF050A30),
+                fontFamily: 'NunitoBold'),
+          ),
+        ),
+        WideTextField(
+          icon: Icons.email,
+          hint: "Your email",
+          controller: _emailController,
+          disable: _signingUp,
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        WideTextField(
+          icon: Icons.lock,
+          hint: "Password",
+          obscureText: true,
+          controller: _passwordController,
+          disable: _signingUp,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+      ],
+    );
+  }
+
+  Widget createButtons() {
+    return Column(
+      children: <Widget>[
+        WideButton(
+          text: "Sign Up",
+          onTap: () {
+            setState(() => _signingUp = true);
+            var authentication = Provider.of<AuthenticationModel>(context, listen: false);
+            authentication.signUp(email: _emailController.text.trim(),
+                password: _passwordController.text.trim())
+              .then((_) => setState(() => _signingUp = false))
+              .catchError((err) {
+                setState(() => _signingUp = false);
+                print("Sign in error " + err.toString());
+              });
+          },
+          disable: _signingUp,
+          progress: _signingUp,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        WideButton(
+          text: "Back To Login",
+          onTap: () {
+            var startPage = Provider.of<StartPageModel>(context, listen: false);
+            startPage.state = StartPageState.Login;
+          },
+          outline: true,
+          disable: _signingUp,
+        )
+      ],
+    );
   }
 }

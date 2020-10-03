@@ -1,6 +1,7 @@
-import 'package:etics_app/start-page/start_page.dart';
+import 'package:etics_app/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,7 +16,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: StartPage(),
+        body: KeyboardSizeProvider(
+          child: Authentication(),
+        ),
       )
     );
   }
