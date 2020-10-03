@@ -46,6 +46,18 @@ flutter:
   uses-material-design: true
   assets:
      - assets/images/Background.png
+     - assets/images/school.png
+     - assets/images/person.png
+     - assets/images/person2.png
+     - assets/images/room.png
+     - assets/images/classroom.png
+     - assets/images/graduation.png
+     - assets/images/air-conditioner.png
+     - assets/images/lightbulb.png
+     - assets/images/camera.png
+     - assets/images/door.png
+     - assets/images/parade.png
+     - assets/images/gas-mask.png
   #   - images/a_dot_ham.jpeg
 
   fonts:
